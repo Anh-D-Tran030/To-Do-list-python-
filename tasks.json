@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "title": "Gym",
+    "due_date": null,
+    "priority": "MEDIUM",
+    "completed": false
+  }
+]

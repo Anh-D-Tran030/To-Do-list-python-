@@ -21,22 +21,23 @@ class TodoApp:
         main_frame = ttk.Frame(self.root)
         main_frame.pack(pady=10, padx=10, fill="both", expand=True)
 
-        # Task entry frame
-        entry_frame = ttk.Frame(main_frame)
-        entry_frame.pack(fill="x")
+        #Search Entry frame
+        self.search_var = tk.StringVar()
+        self.search_entry = tk.Entry(main_frame, textvariable=self.search_var, width=40)
+        self.search_entry.pack(side="left", expand=True)
+        self.search_entry.bind("<KeyRelease>", self._filter_tasks)
 
-        self.task_entry = ttk.Entry(entry_frame, width=40)
-        self.task_entry.pack(side="left", expand=True, padx=5)
+        
 
         # Priority selection
         self.priority_var = tk.StringVar(value="MEDIUM")
         priority_menu = ttk.OptionMenu(
-            entry_frame, self.priority_var,
+            main_frame, self.priority_var,
             "MEDIUM", "LOW", "MEDIUM", "HIGH"
         )
         priority_menu.pack(side="left", padx=5)
 
-        ttk.Button(entry_frame, text="Add", command=self._add_task).pack(side="left", padx=5)
+        ttk.Button(main_frame, text="Add", command=self._add_task).pack(side="left", padx=5)
 
         # Task list treeview with correct column setup
         self.tree = ttk.Treeview(

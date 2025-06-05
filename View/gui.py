@@ -37,7 +37,12 @@ class TodoApp:
         )
         priority_menu.pack(side="left", padx=5)
 
-        ttk.Button(main_frame, text="Add", command=self._add_task).pack(side="left", padx=5)
+        ttk.Button(
+            main_frame, 
+            text="Add Task", 
+            command=self._add_task
+        ).pack(side="left", padx=5)
+
 
         # Task list treeview with correct column setup
         self.tree = ttk.Treeview(
@@ -59,11 +64,25 @@ class TodoApp:
 
         # Action buttons
         button_frame = ttk.Frame(main_frame)
-        button_frame.pack(fill="x")
+        button_frame.pack(fill="x", pady=5)
 
-        ttk.Button(button_frame, text="Delete Selected", command=self._delete_task).pack(side="left", padx=5)
-        ttk.Button(button_frame, text="Mark Complete", command=self._mark_complete).pack(side="left", padx=5)
+        ttk.Button(
+            button_frame, 
+            text="Delete Selected", 
+            command=self._delete_task
+        ).pack(side="left", padx=5)
 
+        ttk.Button(
+            button_frame, 
+            text="Mark Complete", 
+            command=self._mark_complete
+        ).pack(side="left", padx=5)
+
+        ttk.Button(
+            button_frame, 
+            text="Uncheck", 
+            command=self._uncheck_task
+        ).pack(side="left", padx=5)
     def _refresh_task_list(self):
         """Update the Treeview with current tasks"""
         self.tree.delete(*self.tree.get_children())

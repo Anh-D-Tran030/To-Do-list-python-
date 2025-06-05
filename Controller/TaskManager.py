@@ -76,7 +76,9 @@ class TaskManager:
 
     def get_tasks(self, filter_completed: bool = None, search_query: str = None) -> list[Task]:
         """Get tasks with optional filtering"""
-        tasks = self.tasks
+
+        tasks = self.tasks.copy()
+        
         
         if filter_completed is not None:
             tasks = [t for t in tasks if t.completed == filter_completed]
@@ -90,6 +92,12 @@ class TaskManager:
                     (t.due_date and query in t.due_date.strftime("%Y-%m-%d")))
             ]
             
+        return tasks
+    def get_tasks(self, sort=True) -> list[Task]:
+        """Get all tasks, sorted by due date then priority"""
+        tasks = self.tasks.copy()
+        if sort:
+            tasks.sort()  # Uses the __lt__ method we defined
         return tasks
 
     def update_task(self, index: int, **kwargs) -> bool:

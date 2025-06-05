@@ -26,7 +26,16 @@ class Task:
 
     # New: Enable sorting by priority
     def __lt__(self, other):
-        return self.priority.value < other.priority.value
-        
+        if self.due_date is  None and other.due_date is  None:
+            return self.priority.value < other.priority.value
+        elif self.due_date is None:
+            return False
+        elif other.due_date is None:
+            return True
+        else:
+            if self.due_date == other.due_date:
+                return self.priority.value > other.priority.value  # Same date: higher priority first
+            return self.due_date < other.due_date  # Earlier dates first
+
     
     

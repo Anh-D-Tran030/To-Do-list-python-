@@ -1,7 +1,13 @@
 [
   {
     "title": "Chores",
-    "due_date": "2023-08-15",
+    "due_date": "2023-08-15 00:00:00",
+    "priority": "MEDIUM",
+    "completed": false
+  },
+  {
+    "title": "Task",
+    "due_date": null,
     "priority": "MEDIUM",
     "completed": false
   }

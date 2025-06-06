@@ -38,7 +38,7 @@ class TodoApp:
 
         # Compact Date Entry
         self.due_date_entry = DateEntry(
-            date_frame,
+            search_add_frame,
             date_pattern='yyyy-mm-dd',
             width=12,
             background='darkblue',
@@ -50,10 +50,11 @@ class TodoApp:
 
         # Calendar Popup Button
         ttk.Button(
-            search_add_frame, 
-            text="Calendar", 
-            command=self._show_calendar
-        ).pack(side="left", padx=5)
+                search_add_frame,
+                text="📅 Calendar",
+                command=self._show_calendar,
+                width=12
+            ).pack(side="left", padx=5)
 
         
 
@@ -166,6 +167,8 @@ class TodoApp:
         def set_date():
             self.due_date_entry.set_date(cal.get_date())
             top.destroy()
+
+        
         
         btn_frame = ttk.Frame(top)
         btn_frame.pack(pady=5)
@@ -185,13 +188,13 @@ class TodoApp:
     def _refresh_task_list(self, tasks=None):
         """Update the Treeview with current tasks"""
         self.tree.delete(*self.tree.get_children())
-        tasks = tasks or self.task_manager.get_tasks()
+        tasks = tasks or self.task_manager.get_tasks(sort=True)
         today = datetime.now().date()
 
         for task in tasks:
             status = "✓" if task.completed else ""
             due_date = task.due_date.strftime("%Y-%m-%d") if task.due_date else ""
-            tags_text = ", ".join(task.tags)
+            tags_text = ", ".join(task.tags) if task.tags else ""
 
             is_overdue = (task.due_date and task.due_date.date() < today 
                         and not task.completed)
@@ -293,29 +296,23 @@ class TodoApp:
 
     def _add_task(self):
         """Add a new task"""
-        title = self.search_entry.get().strip()  # Using search entry for new tasks
+        title = self.search_var.get().strip()
+        due_date = self.due_date_entry.get_date().strftime('%Y-%m-%d') if self.due_date_entry.get() else None
+        priority = self.priority_var.get().upper()
+        tags = [tag.strip() for tag in self.tag_var.get().split(',') if tag.strip()]
 
         if not title:
-            messagebox.showerror("Error", "Task title cannot be empty")
+            messagebox.showwarning("Input Error", "Task title is required.")
             return
-            
+
         try:
-            due_date_str = self.due_date_entry.get()
-            due_date = due_date_str if due_date_str else None
-
-            priority = Priority[self.priority_var.get()]
-
-            tags = self.tag_var.get().strip()
-            tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else []
-
-            self.task_manager.add_task(title, priority=priority, tags=tag_list)
-
-            self.search_entry.delete(0, "end")
-            self.tag_entry.delete(0, "end")
-            self.due_date_entry.set_date("")
+            self.task_manager.add_task(title, due_date, Priority[priority], tags)
             self._refresh_task_list()
-        except ValueError as e:
-            messagebox.showerror("Error", str(e))
+            self.search_var.set('')
+            self.due_date_entry.set_date(datetime.today())
+            self.tag_var.set('')
+        except ValueError as ve:
+            messagebox.showerror("Invalid Input", str(ve))
 
     def _delete_task(self):
         """Delete selected task"""

@@ -1,20 +1,18 @@
 [
   {
-    "title": "Chores",
-    "due_date": null,
+    "title": "d",
+    "due_date": "2025-06-06",
     "priority": "MEDIUM",
     "completed": false,
     "tags": [
-      "#house"
+      "#work"
     ]
   },
   {
-    "title": "Nau com",
-    "due_date": null,
-    "priority": "HIGH",
+    "title": "D",
+    "due_date": "2025-06-06",
+    "priority": "MEDIUM",
     "completed": false,
-    "tags": [
-      "#house"
-    ]
+    "tags": []
   }
 ]

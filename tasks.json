@@ -1,39 +1,29 @@
 [
   {
+    "title": "Finish assignment",
+    "due_date": null,
+    "priority": "HIGH",
+    "completed": false,
+    "tags": [
+      "#school"
+    ]
+  },
+  {
     "title": "Chores",
     "due_date": null,
-    "priority": "LOW",
-    "completed": false,
-    "tags": []
-  },
-  {
-    "title": "Homework",
-    "due_date": null,
     "priority": "HIGH",
     "completed": false,
-    "tags": []
+    "tags": [
+      "#house"
+    ]
   },
   {
-    "title": "shopping",
-    "due_date": null,
-    "priority": "MEDIUM",
-    "completed": false,
-    "tags": []
-  },
-  {
-    "title": "Cheerleading",
-    "due_date": "2025-12-01",
-    "priority": "HIGH",
-    "completed": false,
-    "tags": []
-  },
-  {
-    "title": "KFC",
+    "title": "Shopping",
     "due_date": null,
     "priority": "MEDIUM",
     "completed": false,
     "tags": [
-      "#work"
+      "#house"
     ]
   }
 ]

@@ -27,6 +27,7 @@ class TodoApp:
         search_add_frame.pack(fill="x", pady=5)
 
         # Search Entry
+        ttk.Label(search_add_frame, text="Search/Filter:").pack(side="left", padx=2)
         self.search_var = tk.StringVar()
         self.search_entry = ttk.Entry(
             search_add_frame, 
@@ -46,6 +47,7 @@ class TodoApp:
 
 
         # Tag entry field
+        ttk.Label(search_add_frame, text="Tag:").pack(side="left", padx=2)
         self.tag_var = tk.StringVar()
         self.tag_entry = ttk.Entry(search_add_frame, textvariable=self.tag_var, width=20)
         self.tag_entry.pack(side="left", padx=5)

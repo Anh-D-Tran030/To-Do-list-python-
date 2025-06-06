@@ -1,8 +1,12 @@
+
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 from Model.Task import Task, Priority
 from Controller.TaskManager import TaskManager
 from datetime import datetime
+from tkcalendar import Calendar, DateEntry
+
 
 class TodoApp:
     def __init__(self, root):
@@ -26,6 +30,34 @@ class TodoApp:
         search_add_frame = ttk.Frame(main_frame)
         search_add_frame.pack(fill="x", pady=5)
 
+        # ===== Enhanced Date Input Section =====
+        date_frame = ttk.Frame(search_add_frame)
+        date_frame.pack(side="left", padx=5)
+
+        ttk.Label(date_frame, text="Due Date:").pack(side="left")
+
+        # Compact Date Entry
+        self.due_date_entry = DateEntry(
+            date_frame,
+            date_pattern='yyyy-mm-dd',
+            width=12,
+            background='darkblue',
+            foreground='white',
+            borderwidth=2
+        )
+        self.due_date_entry.pack(side="left")
+
+
+        # Calendar Popup Button
+        ttk.Button(
+            search_add_frame, 
+            text="Calendar", 
+            command=self._show_calendar
+        ).pack(side="left", padx=5)
+
+        
+
+        
         # Search Entry
         ttk.Label(search_add_frame, text="Search/Filter:").pack(side="left", padx=2)
         self.search_var = tk.StringVar()
@@ -105,21 +137,69 @@ class TodoApp:
             text="Uncheck", 
             command=self._uncheck_task
         ).pack(side="left", padx=5)
+    
+    def _show_calendar(self):
+        """Show standalone calendar for date selection"""
+        top = tk.Toplevel(self.root)
+        top.title("Select Due Date")
+        top.resizable(False, False)
+        
+        # Get current date from entry or use today
+        try:
+            current_date = datetime.strptime(self.due_date_entry.get(), "%Y-%m-%d")
+        except ValueError:
+            current_date = datetime.now()
+
+        cal = Calendar(
+            top,
+            selectmode='day',
+            year=current_date.year,
+            month=current_date.month,
+            day=current_date.day,
+            date_pattern='yyyy-mm-dd',
+            background='darkblue',
+            foreground='white',
+            selectbackground='red'
+        )
+        cal.pack(pady=10, padx=10)
+        
+        def set_date():
+            self.due_date_entry.set_date(cal.get_date())
+            top.destroy()
+        
+        btn_frame = ttk.Frame(top)
+        btn_frame.pack(pady=5)
+        
+        ttk.Button(
+            btn_frame, 
+            text="Select",
+            command=set_date
+        ).pack(side="left", padx=5)
+        
+        ttk.Button(
+            btn_frame,
+            text="Clear",
+            command=lambda: [self.due_date_entry.set_date(""), top.destroy()]
+        ).pack(side="left", padx=5)
 
     def _refresh_task_list(self, tasks=None):
         """Update the Treeview with current tasks"""
         self.tree.delete(*self.tree.get_children())
         tasks = tasks or self.task_manager.get_tasks()
+        today = datetime.now().date()
 
         for task in tasks:
             status = "✓" if task.completed else ""
             due_date = task.due_date.strftime("%Y-%m-%d") if task.due_date else ""
             tags_text = ", ".join(task.tags)
+
+            is_overdue = (task.due_date and task.due_date.date() < today 
+                        and not task.completed)
             
             self.tree.insert(
                 "", "end",
                 values=(task.title, task.priority.name, due_date, status, tags_text),
-                tags=(task.priority.name,)
+                tags=("overdue" if is_overdue else task.priority.name,)
             )
 
         # Configure tag colors for priorities
@@ -214,18 +294,25 @@ class TodoApp:
     def _add_task(self):
         """Add a new task"""
         title = self.search_entry.get().strip()  # Using search entry for new tasks
+
         if not title:
             messagebox.showerror("Error", "Task title cannot be empty")
             return
             
         try:
+            due_date_str = self.due_date_entry.get()
+            due_date = due_date_str if due_date_str else None
+
             priority = Priority[self.priority_var.get()]
+
             tags = self.tag_var.get().strip()
             tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else []
+
             self.task_manager.add_task(title, priority=priority, tags=tag_list)
 
             self.search_entry.delete(0, "end")
             self.tag_entry.delete(0, "end")
+            self.due_date_entry.set_date("")
             self._refresh_task_list()
         except ValueError as e:
             messagebox.showerror("Error", str(e))

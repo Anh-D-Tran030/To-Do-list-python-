@@ -44,6 +44,13 @@ class TodoApp:
         )
         priority_menu.pack(side="left", padx=5)
 
+
+        # Tag entry field
+        self.tag_var = tk.StringVar()
+        self.tag_entry = ttk.Entry(search_add_frame, textvariable=self.tag_var, width=20)
+        self.tag_entry.pack(side="left", padx=5)
+        self.tag_entry.insert(0, "#work")  # default/example
+
         # Add Task Button
         ttk.Button(
             search_add_frame, 
@@ -54,7 +61,7 @@ class TodoApp:
         # Task list treeview
         self.tree = ttk.Treeview(
             main_frame,
-            columns=("Title", "Priority", "Due Date", "Status"),
+            columns=("Title", "Priority", "Due Date", "Status","Tags"),
             show="headings",
             selectmode="browse"
         )
@@ -64,11 +71,13 @@ class TodoApp:
         self.tree.heading("Priority", text="Priority")
         self.tree.heading("Due Date", text="Due Date")
         self.tree.heading("Status", text="Status")
+        self.tree.heading("Tags", text="Tags")
 
         self.tree.column("Title", width=250, anchor="w")
         self.tree.column("Priority", width=100, anchor="center")
         self.tree.column("Due Date", width=120, anchor="center")
         self.tree.column("Status", width=60, anchor="center")
+        self.tree.column("Tags", width=100, anchor="center")
         
         self.tree.pack(fill="both", expand=True, pady=5)
         self.tree.bind("<Double-1>", self._on_double_click)  # Enable editing
@@ -103,10 +112,11 @@ class TodoApp:
         for task in tasks:
             status = "✓" if task.completed else ""
             due_date = task.due_date.strftime("%Y-%m-%d") if task.due_date else ""
+            tags_text = ", ".join(task.tags)
             
             self.tree.insert(
                 "", "end",
-                values=(task.title, task.priority.name, due_date, status),
+                values=(task.title, task.priority.name, due_date, status, tags_text),
                 tags=(task.priority.name,)
             )
 
@@ -127,8 +137,9 @@ class TodoApp:
         filtered = [
             t for t in all_tasks 
             if query in t.title.lower() or 
-               query in t.priority.name.lower() or
-               (t.due_date and query in t.due_date.strftime("%Y-%m-%d"))
+                query in t.priority.name.lower() or
+                (t.due_date and query in t.due_date.strftime("%Y-%m-%d")) or
+                any(query in tag.lower() for tag in t.tags)
         ]
         self._refresh_task_list(filtered)
 
@@ -148,6 +159,8 @@ class TodoApp:
         
         # Get current value
         current_value = self.tree.item(row_id)['values'][col_index]
+
+        
         
         # Create editable entry
         x, y, width, height = self.tree.bbox(row_id, column)
@@ -205,8 +218,12 @@ class TodoApp:
             
         try:
             priority = Priority[self.priority_var.get()]
-            self.task_manager.add_task(title, priority=priority)
+            tags = self.tag_var.get().strip()
+            tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else []
+            self.task_manager.add_task(title, priority=priority, tags=tag_list)
+
             self.search_entry.delete(0, "end")
+            self.tag_entry.delete(0, "end")
             self._refresh_task_list()
         except ValueError as e:
             messagebox.showerror("Error", str(e))

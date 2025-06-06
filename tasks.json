@@ -3,24 +3,37 @@
     "title": "Chores",
     "due_date": null,
     "priority": "LOW",
-    "completed": false
+    "completed": false,
+    "tags": []
   },
   {
     "title": "Homework",
     "due_date": null,
     "priority": "HIGH",
-    "completed": false
+    "completed": false,
+    "tags": []
   },
   {
     "title": "shopping",
     "due_date": null,
     "priority": "MEDIUM",
-    "completed": false
+    "completed": false,
+    "tags": []
   },
   {
     "title": "Cheerleading",
     "due_date": "2025-12-01",
     "priority": "HIGH",
-    "completed": false
+    "completed": false,
+    "tags": []
+  },
+  {
+    "title": "KFC",
+    "due_date": null,
+    "priority": "MEDIUM",
+    "completed": false,
+    "tags": [
+      "#work"
+    ]
   }
 ]

@@ -22,7 +22,8 @@ class TaskManager:
                         task = Task(
                             title=task_data.get('title', ''),
                             due_date=task_data.get('due_date'),
-                            priority=Priority[task_data.get('priority', 'MEDIUM')]
+                            priority=Priority[task_data.get('priority', 'MEDIUM')],
+                            tags = task_data.get('tags', []),
                         )
                         if task_data.get('completed', False):
                             task.mark_completed()
@@ -43,15 +44,16 @@ class TaskManager:
                     'title': task.title,
                     'due_date': task.due_date.strftime("%Y-%m-%d") if task.due_date else None,
                     'priority': task.priority.name,
-                    'completed': task.completed
+                    'completed': task.completed,
+                    'tags': task.tags
                 } for task in self.tasks], f, indent=2)
             
             # Atomic replace
             temp_file.replace(self.data_file)
-        except Exception as e:
+        except Exception as e:  
             print(f"Error saving tasks: {e}")
 
-    def add_task(self, title: str, due_date: str = None, priority: Priority = Priority.MEDIUM) -> Task:
+    def add_task(self, title: str, due_date: str = None, priority: Priority = Priority.MEDIUM, tags: list[str] = []) -> Task:
         """Add a new task with validation"""
         if not title.strip():
             raise ValueError("Task title cannot be empty")
@@ -61,7 +63,7 @@ class TaskManager:
         except ValueError:
             raise ValueError("Invalid date format. Use YYYY-MM-DD")
         
-        task = Task(title=title, due_date=due_date, priority=priority)
+        task = Task(title=title, due_date=due_date, priority=priority, tags=tags)
         self.tasks.append(task)
         self._save_tasks()
         return task
@@ -73,32 +75,33 @@ class TaskManager:
             self._save_tasks()
             return True
         return False
-
-    def get_tasks(self, filter_completed: bool = None, search_query: str = None) -> list[Task]:
-        """Get tasks with optional filtering"""
-
+    def get_tasks(self, filter_completed: bool = None, search_query: str = None, tag_filter: str = None, sort: bool = False ) -> list[Task]:
         tasks = self.tasks.copy()
-        
-        
+
         if filter_completed is not None:
             tasks = [t for t in tasks if t.completed == filter_completed]
-            
+
         if search_query:
             query = search_query.lower()
             tasks = [
                 t for t in tasks
-                if (query in t.title.lower() or
-                    query in t.priority.name.lower() or
-                    (t.due_date and query in t.due_date.strftime("%Y-%m-%d")))
+                if (
+                    query in t.title.lower()
+                    or query in t.priority.name.lower()
+                    or (t.due_date and query in t.due_date.strftime("%Y-%m-%d"))
+                )
             ]
-            
-        return tasks
-    def get_tasks(self, sort=True) -> list[Task]:
-        """Get all tasks, sorted by due date then priority"""
-        tasks = self.tasks.copy()
+
+        if tag_filter:
+            tag_query = tag_filter.lower()
+            tasks = [t for t in tasks if any(tag_query in tag.lower() for tag in t.tags)]
+
         if sort:
-            tasks.sort()  # Uses the __lt__ method we defined
+            tasks.sort()  # Uses __lt__
+
         return tasks
+
+   
 
     def update_task(self, index: int, **kwargs) -> bool:
         """Update task attributes"""

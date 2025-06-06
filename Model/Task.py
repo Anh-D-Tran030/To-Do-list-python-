@@ -8,11 +8,13 @@ class Priority(Enum):
     HIGH = 3
 
 class Task:
-    def __init__(self, title: str, due_date: str = None, priority: Priority = Priority.MEDIUM):
+    def __init__(self, title: str, due_date: str = None, priority: Priority = Priority.MEDIUM, tags: list[str] = None):
         self.title = title
         self.due_date = self.validate_date(due_date) if due_date else None
         self.priority = priority if isinstance(priority, Priority) else Priority(priority)
         self.completed = False 
+        self.tags = tags or []
+
 
     def validate_date(self, date_str : str):
         try:
@@ -22,7 +24,7 @@ class Task:
     def mark_completed(self):
         self.completed = True
     def __repr__(self):
-        return f"Task('{self.title}', priority={self.priority.name}, due={self.due_date}, done={self.completed})"
+        return f"Task('{self.title}', priority={self.priority.name}, due={self.due_date}, done={self.completed}, tags={self.tags})"
 
     # New: Enable sorting by priority
     def __lt__(self, other):

@@ -1,26 +1,17 @@
 [
   {
-    "title": "Finish assignment",
-    "due_date": null,
-    "priority": "HIGH",
-    "completed": false,
-    "tags": [
-      "#school"
-    ]
-  },
-  {
     "title": "Chores",
     "due_date": null,
-    "priority": "HIGH",
+    "priority": "MEDIUM",
     "completed": false,
     "tags": [
       "#house"
     ]
   },
   {
-    "title": "Shopping",
+    "title": "Nau com",
     "due_date": null,
-    "priority": "MEDIUM",
+    "priority": "HIGH",
     "completed": false,
     "tags": [
       "#house"
